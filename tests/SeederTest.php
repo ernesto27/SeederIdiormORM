@@ -40,4 +40,10 @@ class SeederTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($data, $this->seeder->getData());
     }
 
+    /** @test */
+    public function it_should_create_a_instance_of_orm_idiorm()
+    {
+        $this->assertEquals(\ORM::class, get_class($this->seeder->getModel()));
+    }
+
 }

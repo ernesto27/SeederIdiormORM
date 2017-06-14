@@ -11,6 +11,12 @@ class Seeder
     private static $instance = null;
 
     /**
+     * Instancia de idiorm ORM
+     * @var object
+     */
+    private $model;
+
+    /**
      * Nombre de la tabla DB
      * @var object
      */
@@ -42,7 +48,8 @@ class Seeder
     public function table($value)
     {
         $this->tableName = $value;
-        return $this;
+        $this->model = \ORM::for_table($this->tableName)->create();
+		return $this;
     }
 
     /**
@@ -53,6 +60,12 @@ class Seeder
     public function data($data)
     {
         $this->data = $data;
+    }
+
+
+    public function getModel()
+    {
+        return $this->model;
     }
 
     public function getTableName()
