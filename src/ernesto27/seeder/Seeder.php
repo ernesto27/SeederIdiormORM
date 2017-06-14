@@ -55,11 +55,31 @@ class Seeder
     /**
      * Setea la data dummy que se guarda en DB
      * @param array
-     * @return
+     * @return object
      */
     public function data($data)
     {
         $this->data = $data;
+        $this->setFields();
+        return $this;
+    }
+
+    /**
+     * Save a model on DB
+     * @return this
+     */
+    public function create()
+    {
+        return $this->model->save();
+    }
+
+
+    protected function setFields()
+    {
+        foreach ($this->data as $item) {
+            $this->model->$item['field'] = $item['value'];
+        }
+        return $this->model;
     }
 
 
