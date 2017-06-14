@@ -1,0 +1,17 @@
+{
+    "name": "ernestoponce/idiorm-seeder",
+    "description": "Componente para poder genera data de pruebas en TDD",
+    "authors": [
+        {
+            "name": "ernesto ponce",
+            "email": "ernesto@pigmalionstudios.com.ar"
+        }
+    ],
+    "require": {
+        "j4mie/paris": "1.3.*"
+    },
+    "require-dev":{
+        "fzaninotto/faker" : "~1.5",
+        "phpunit/phpunit": "^5.6"
+    }
+}
