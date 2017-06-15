@@ -48,7 +48,7 @@ class Seeder
     public function table($value)
     {
         $this->tableName = $value;
-        $this->model = \ORM::for_table($this->tableName)->create();
+        $this->createModel();
 		return $this;
     }
 
@@ -66,13 +66,26 @@ class Seeder
 
     /**
      * Save a model on DB
-     * @return this
+     * @param $count integer
+     * @return $this
      */
-    public function create()
+    public function create($count = false)
     {
+        if($count){
+			for ($i=0; $i < $count; $i++) {
+				$this->createModel();
+                $this->setFields()->save();
+			}
+			return $this;
+		}
+
         return $this->model->save();
     }
 
+    protected function createModel()
+	{
+		$this->model = \ORM::for_table($this->tableName)->create();
+	}
 
     protected function setFields()
     {
@@ -89,14 +102,14 @@ class Seeder
      * @return bool
      */
 
-    public function existsOnDatabase($tableName, $data)
+    public function existsOnDatabase($tableName, $data, $count = false)
     {
         $factory = \ORM::for_table($tableName);
         foreach ($data as $item){
             $factory->where($item['field'], $item['value']);
         }
-
-        if($factory->count()){
+        if($countRows = $factory->count()){
+            if($count) return $countRows;
             return true;
         }
         return false;

@@ -75,4 +75,17 @@ class SeederTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($this->seeder->existsOnDatabase('posts', $data));
     }
 
+    /** @test */
+    public function it_should_save_the_quantity_of_parameter_of_create()
+    {
+        $data = array(
+            array('field' => 'title', 'value' => 'titleparameter'),
+            array('field' => 'body', 'value' => 'bodyparameter')
+        );
+        $countTest = 8;
+        $save = Seeder::init()->table('posts')->data($data)->create($countTest);
+        $count = $this->seeder->existsOnDatabase('posts', $data, $count = true);
+        $this->assertSame($countTest, $count);
+    }
+
 }
