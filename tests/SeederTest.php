@@ -9,6 +9,11 @@ class SeederTest extends \PHPUnit_Framework_TestCase
 {
     private $seeder;
 
+    public static function setUpBeforeClass()
+    {
+        exec('vendor/bin/phinx rollback -e development -t 0');
+        exec('vendor/bin/phinx migrate');
+    }
 
 	protected function setUp()
 	{
@@ -51,22 +56,22 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     public function it_should_save_on_sqlite_a_model()
     {
         $data = array(
-            array('field' => 'title', 'value' => 'titulotest'),
+            array('field' => 'title', 'value' => 'titulotestww'),
             array('field' => 'body', 'value' => 'bodytest')
         );
-        $save = $this->seeder->table('posts')->data($data)->create();
+        $save = Seeder::init()->table('posts')->data($data)->create();
         $this->assertTrue($save);
-        $this->seeder->existsOnDatabase('posts', $data);
+
     }
 
     /** @test */
     public function it_should_check_if_a_entity_exists_on_db()
     {
         $data = array(
-            array('field' => 'title', 'value' => 'titlecheck'),
-            array('field' => 'body', 'value' => 'bodycheck')
+            array('field' => 'title', 'value' => 'titulotestww'),
+            array('field' => 'body', 'value' => 'bodytest')
         );
-        $save = $this->seeder->table('posts')->data($data)->create();
+        $save = Seeder::init()->table('posts')->data($data)->create();
         $this->assertTrue($this->seeder->existsOnDatabase('posts', $data));
     }
 
