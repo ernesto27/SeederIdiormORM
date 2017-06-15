@@ -29,11 +29,34 @@ class Seeder
     private $data;
 
     /**
+     * Instacia de faker dummy data
+     * @var object
+     */
+    private $faker;
+
+    /**
+     * Obtiene data con los valores creador por faker
+     * @var array
+     */
+    private $fakerData;
+
+
+    private static $modelCountSaved = 0;
+
+
+    public function __construct()
+    {
+        $this->faker = \Faker\Factory::create();
+    }
+
+
+    /**
      * Crea una instancia de la clase utilizand un singleton
      * @return object
      */
     public static function init()
     {
+        self::$modelCountSaved = 0;
         if(!self::$instance instanceof self) {
             self::$instance = new self;
         }
@@ -49,6 +72,7 @@ class Seeder
     {
         $this->tableName = $value;
         $this->createModel();
+        $this->fakerData = array();
 		return $this;
     }
 
@@ -75,10 +99,12 @@ class Seeder
 			for ($i=0; $i < $count; $i++) {
 				$this->createModel();
                 $this->setFields()->save();
+                self::$modelCountSaved += 1;
 			}
 			return $this;
 		}
 
+        self::$modelCountSaved += 1;
         return $this->model->save();
     }
 
@@ -90,7 +116,10 @@ class Seeder
     protected function setFields()
     {
         foreach ($this->data as $item) {
-            $this->model->$item['field'] = $item['value'];
+            $fakerArray = explode('.', $item['value']);
+            $fakerValue = $this->faker->$fakerArray[1];
+            $this->fakerData[] = array('field' => $item['field'], 'value' => $fakerValue);
+            $this->model->$item['field'] = $fakerValue ;
         }
         return $this->model;
     }
@@ -108,6 +137,7 @@ class Seeder
         foreach ($data as $item){
             $factory->where($item['field'], $item['value']);
         }
+
         if($countRows = $factory->count()){
             if($count) return $countRows;
             return true;
@@ -129,6 +159,16 @@ class Seeder
     public function getData()
     {
         return $this->data;
+    }
+
+    public function getFakerData()
+    {
+        return $this->fakerData;
+    }
+
+    public function getModelCountSaved()
+    {
+        return self::$modelCountSaved;
     }
 
 }

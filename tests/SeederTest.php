@@ -8,6 +8,8 @@ use \Ernesto27\Seeder\Seeder;
 class SeederTest extends \PHPUnit_Framework_TestCase
 {
     private $seeder;
+    private $faker;
+    private $data;
 
     public static function setUpBeforeClass()
     {
@@ -17,9 +19,12 @@ class SeederTest extends \PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-        // Create a model and save on DB
-        // Seeder::init()->table('sometable')->data($posts)->create(5)
         $this->seeder = Seeder::init();
+        $this->faker = Faker\Factory::create();
+        $this->data = array(
+            array('field' => 'title', 'value' => 'faker.sentence'),
+            array('field' => 'body', 'value' => 'faker.text')
+        );
 	}
 
 	/** @test */
@@ -38,12 +43,8 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_set_data_dummy_array()
     {
-        $data = array(
-            array('field' => 'title', 'value' => 'titulotest'),
-            array('field' => 'body', 'value' => 'bodytest')
-        );
-        $this->seeder->table('posts')->data($data);
-        $this->assertEquals($data, $this->seeder->getData());
+        $this->seeder->table('posts')->data($this->data);
+        $this->assertEquals($this->data, $this->seeder->getData());
     }
 
     /** @test */
@@ -55,37 +56,24 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_save_on_sqlite_a_model()
     {
-        $data = array(
-            array('field' => 'title', 'value' => 'titulotestww'),
-            array('field' => 'body', 'value' => 'bodytest')
-        );
-        $save = Seeder::init()->table('posts')->data($data)->create();
+        $save = Seeder::init()->table('posts')->data($this->data)->create();
         $this->assertTrue($save);
-
     }
 
     /** @test */
     public function it_should_check_if_a_entity_exists_on_db()
     {
-        $data = array(
-            array('field' => 'title', 'value' => 'titulotestww'),
-            array('field' => 'body', 'value' => 'bodytest')
-        );
-        $save = Seeder::init()->table('posts')->data($data)->create();
-        $this->assertTrue($this->seeder->existsOnDatabase('posts', $data));
+        $seeder = Seeder::init();
+        $seeder->table('posts')->data($this->data)->create();
+        $this->assertTrue($seeder->existsOnDatabase('posts', $seeder->getFakerData()));
     }
 
     /** @test */
     public function it_should_save_the_quantity_of_parameter_of_create()
     {
-        $data = array(
-            array('field' => 'title', 'value' => 'titleparameter'),
-            array('field' => 'body', 'value' => 'bodyparameter')
-        );
         $countTest = 8;
-        $save = Seeder::init()->table('posts')->data($data)->create($countTest);
-        $count = $this->seeder->existsOnDatabase('posts', $data, $count = true);
-        $this->assertSame($countTest, $count);
+        $save = Seeder::init()->table('posts')->data($this->data)->create($countTest);
+        $this->assertSame($countTest, $this->seeder->getModelCountSaved());
     }
 
 }
