@@ -82,6 +82,26 @@ class Seeder
         return $this->model;
     }
 
+    /**
+     * Verifico si un model existe en DB
+     * @param $tableName string
+     * @param $data array
+     * @return bool
+     */
+
+    public function existsOnDatabase($tableName, $data)
+    {
+        $factory = \ORM::for_table($tableName);
+        foreach ($data as $item){
+            $factory->where($item['field'], $item['value']);
+        }
+
+        if($factory->count()){
+            return true;
+        }
+        return false;
+    }
+
 
     public function getModel()
     {

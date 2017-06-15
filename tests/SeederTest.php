@@ -34,8 +34,8 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     public function it_should_set_data_dummy_array()
     {
         $data = array(
-            array('key' => 'title1', 'title post2'),
-            array('key' => 'title2', 'title post2')
+            array('field' => 'title', 'value' => 'titulotest'),
+            array('field' => 'body', 'value' => 'bodytest')
         );
         $this->seeder->table('posts')->data($data);
         $this->assertEquals($data, $this->seeder->getData());
@@ -47,19 +47,27 @@ class SeederTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(\ORM::class, get_class($this->seeder->getModel()));
     }
 
-
-
     /** @test */
     public function it_should_save_on_sqlite_a_model()
     {
         $data = array(
-            array('key' => 'title1', 'title post2'),
-            array('key' => 'title2', 'title post2')
+            array('field' => 'title', 'value' => 'titulotest'),
+            array('field' => 'body', 'value' => 'bodytest')
         );
-        $posts = \ORM::for_table('posts')->find_many();
-        var_dump($posts);
-        //$this->seeder->table('posts')->data($data)->create();
-        // $this->assertEquals(\ORM::class, get_class($this->seeder->getModel()));
+        $save = $this->seeder->table('posts')->data($data)->create();
+        $this->assertTrue($save);
+        $this->seeder->existsOnDatabase('posts', $data);
+    }
+
+    /** @test */
+    public function it_should_check_if_a_entity_exists_on_db()
+    {
+        $data = array(
+            array('field' => 'title', 'value' => 'titlecheck'),
+            array('field' => 'body', 'value' => 'bodycheck')
+        );
+        $save = $this->seeder->table('posts')->data($data)->create();
+        $this->assertTrue($this->seeder->existsOnDatabase('posts', $data));
     }
 
 }
