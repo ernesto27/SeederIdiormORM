@@ -1,0 +1,10 @@
+paths:
+    migrations: %%PHINX_CONFIG_DIR%%/migrations
+
+environments:
+    development:
+        adapter: sqlite
+        name: ./data/database
+    testing:
+        adapter: sqlite
+        memory: true     # Setting memory to *any* value overrides name

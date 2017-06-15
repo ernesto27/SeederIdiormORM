@@ -3,7 +3,7 @@ require_once 'vendor/autoload.php';
 require_once 'src/ernesto27/seeder/Seeder.php';
 
 use \Ernesto27\Seeder\Seeder;
-\ORM::configure('sqlite:./tests/database');
+\ORM::configure('sqlite:./data/database');
 
 class SeederTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,7 +56,9 @@ class SeederTest extends \PHPUnit_Framework_TestCase
             array('key' => 'title1', 'title post2'),
             array('key' => 'title2', 'title post2')
         );
-        $this->seeder->table('posts')->data($data)->create();
+        $posts = \ORM::for_table('posts')->find_many();
+        var_dump($posts);
+        //$this->seeder->table('posts')->data($data)->create();
         // $this->assertEquals(\ORM::class, get_class($this->seeder->getModel()));
     }
 
