@@ -45,7 +45,10 @@ class Seeder
      */
     private $fakerData;
 
-
+    /**
+     *
+     * @var integer
+     */
     private static $modelCountSaved = 0;
 
 
@@ -116,6 +119,11 @@ class Seeder
         return $this;
     }
 
+    /**
+     * Callback method that is uses when attach parent models to child
+     * @param $callback function
+     * @return callback
+     */
     public function each($callback)
     {
         foreach ($this->models as $key => $value) {
@@ -123,12 +131,18 @@ class Seeder
         }
     }
 
-
+    /**
+     * Create a instance of idiorm ORM
+     */
     protected function createModel()
 	{
 		$this->model = \ORM::for_table($this->tableName)->create();
 	}
 
+    /**
+     * Set field models dinamically
+     * @return object
+     */
     protected function setFields()
     {
         foreach ($this->data as $item) {
@@ -145,14 +159,18 @@ class Seeder
         return $this->model;
     }
 
-
+    /**
+     * Check if a value string is of faker type
+     * @param string
+     * @return boolean
+     */
     protected function isFakerString($value)
     {
         if(strpos($value, 'faker') !== false){
             return true;
         }
     }
-
+    
     protected function reset()
     {
         $this->fakerData = array();
