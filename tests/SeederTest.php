@@ -19,7 +19,7 @@ class SeederTest extends \PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
-        $this->seeder = Seeder::init();
+        $this->seeder = Seeder::getInstance();
         $this->faker = Faker\Factory::create();
         $this->data = array(
             array('field' => 'title', 'value' => 'faker.sentence'),
@@ -61,7 +61,7 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_check_if_a_entity_exists_on_db()
     {
-        $seeder = Seeder::init();
+        $seeder = Seeder::getInstance();
         $seeder->table('posts')->data($this->data)->create();
         $this->assertTrue($seeder->existsOnDatabase('posts', $seeder->getFakerData()));
     }
@@ -70,23 +70,42 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     public function it_should_save_the_quantity_of_parameter_of_create()
     {
         $countTest = 8;
-        $save = Seeder::init()->table('posts')->data($this->data)->create($countTest);
+        $save = Seeder::getInstance()->table('posts')->data($this->data)->create($countTest);
         $this->assertSame($countTest, $this->seeder->getModelCountSaved());
     }
 
     /** @test */
     public function it_should_attach_a_child_model_using_a_closure()
     {
-        Seeder::init()->table('users')->data($this->dataUser)->create()->each(function($model){
+        Seeder::getInstance()->table('users')->data($this->dataUser)->create()->each(function($model){
             $this->data['user_id'] = array(
                 'field' => 'user_id',
-                'value' => $model[0]->id
+                'value' => $model->id
             );
-            Seeder::init()->table('posts')->data($this->data)->create();
+            Seeder::getInstance()->table('posts')->data($this->data)->create();
         });
 
-        $this->assertTrue(Seeder::init()->existsOnDatabase('posts', Seeder::init()->getFakerData()));
-
+        $this->assertTrue(Seeder::getInstance()->existsOnDatabase('posts', Seeder::getInstance()->getFakerData()));
     }
+
+
+    /** @test */
+    public function it_should_attach_a_child_model_when_create_any_quantity_using_a_closure()
+    {
+        $count = 4;
+        Seeder::getInstance()->table('users')->data($this->dataUser)->create($count)->each(function($model){
+            $this->data['user_id'] = array(
+                'field' => 'user_id',
+                'value' => $model->id
+            );
+
+            $this->assertEquals($count, count($models));
+            Seeder::getInstance()->table('posts')->data($this->data)->create();
+        });
+
+        $this->assertTrue(Seeder::getInstance()->existsOnDatabase('posts', Seeder::getInstance()->getFakerData()));
+    }
+
+
 
 }

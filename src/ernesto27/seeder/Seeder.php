@@ -59,7 +59,7 @@ class Seeder
      * Crea una instancia de la clase utilizand un singleton
      * @return object
      */
-    public static function init()
+    public static function getInstance()
     {
         self::$modelCountSaved = 0;
         if(!self::$instance instanceof self) {
@@ -77,7 +77,7 @@ class Seeder
     {
         $this->tableName = $value;
         $this->createModel();
-        $this->fakerData = array();
+        $this->reset();
 		return $this;
     }
 
@@ -105,6 +105,7 @@ class Seeder
 				$this->createModel();
                 $this->setFields()->save();
                 self::$modelCountSaved += 1;
+                $this->models[] = $this->model;
 			}
 			return $this;
 		}
@@ -117,7 +118,9 @@ class Seeder
 
     public function each($callback)
     {
-        $callback($this->models);
+        foreach ($this->models as $key => $value) {
+            $callback($value);
+        }
     }
 
 
@@ -137,17 +140,23 @@ class Seeder
             }
 
             $this->fakerData[] = array('field' => $item['field'], 'value' => $value);
-
             $this->model->$item['field'] = $value;
         }
         return $this->model;
     }
+
 
     protected function isFakerString($value)
     {
         if(strpos($value, 'faker') !== false){
             return true;
         }
+    }
+
+    protected function reset()
+    {
+        $this->fakerData = array();
+        $this->models = array();
     }
 
     /**
