@@ -17,6 +17,11 @@ class Seeder
     private $model;
 
     /**
+     * @var object
+     */
+    private $models;
+
+    /**
      * Nombre de la tabla DB
      * @var object
      */
@@ -104,9 +109,17 @@ class Seeder
 			return $this;
 		}
 
+        $this->model->save();
         self::$modelCountSaved += 1;
-        return $this->model->save();
+        $this->models[] = $this->model;
+        return $this;
     }
+
+    public function each($callback)
+    {
+        $callback($this->models);
+    }
+
 
     protected function createModel()
 	{
@@ -116,12 +129,25 @@ class Seeder
     protected function setFields()
     {
         foreach ($this->data as $item) {
-            $fakerArray = explode('.', $item['value']);
-            $fakerValue = $this->faker->$fakerArray[1];
-            $this->fakerData[] = array('field' => $item['field'], 'value' => $fakerValue);
-            $this->model->$item['field'] = $fakerValue ;
+            if($this->isFakerString($item['value'])){
+                $fakerArray = explode('.', $item['value']);
+                $value = $this->faker->$fakerArray[1];
+            }else{
+                $value = $item['value'];
+            }
+
+            $this->fakerData[] = array('field' => $item['field'], 'value' => $value);
+
+            $this->model->$item['field'] = $value;
         }
         return $this->model;
+    }
+
+    protected function isFakerString($value)
+    {
+        if(strpos($value, 'faker') !== false){
+            return true;
+        }
     }
 
     /**

@@ -25,6 +25,11 @@ class SeederTest extends \PHPUnit_Framework_TestCase
             array('field' => 'title', 'value' => 'faker.sentence'),
             array('field' => 'body', 'value' => 'faker.text')
         );
+
+        $this->dataUser = array(
+            array('field' => 'name', 'value' => 'faker.name'),
+            array('field' => 'email', 'value' => 'faker.email')
+        );
 	}
 
 	/** @test */
@@ -54,13 +59,6 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     }
 
     /** @test */
-    public function it_should_save_on_sqlite_a_model()
-    {
-        $save = Seeder::init()->table('posts')->data($this->data)->create();
-        $this->assertTrue($save);
-    }
-
-    /** @test */
     public function it_should_check_if_a_entity_exists_on_db()
     {
         $seeder = Seeder::init();
@@ -74,6 +72,21 @@ class SeederTest extends \PHPUnit_Framework_TestCase
         $countTest = 8;
         $save = Seeder::init()->table('posts')->data($this->data)->create($countTest);
         $this->assertSame($countTest, $this->seeder->getModelCountSaved());
+    }
+
+    /** @test */
+    public function it_should_attach_a_child_model_using_a_closure()
+    {
+        Seeder::init()->table('users')->data($this->dataUser)->create()->each(function($model){
+            $this->data['user_id'] = array(
+                'field' => 'user_id',
+                'value' => $model[0]->id
+            );
+            Seeder::init()->table('posts')->data($this->data)->create();
+        });
+
+        $this->assertTrue(Seeder::init()->existsOnDatabase('posts', Seeder::init()->getFakerData()));
+
     }
 
 }

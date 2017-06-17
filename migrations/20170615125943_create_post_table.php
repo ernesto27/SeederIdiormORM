@@ -12,6 +12,7 @@ class CreatePostTable extends AbstractMigration
         $this->table('posts')
              ->addColumn('title', 'string')
              ->addColumn('body', 'text')
+             ->addColumn('user_id', 'integer')
              ->save();
 
     }
