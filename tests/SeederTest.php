@@ -1,8 +1,8 @@
 <?php
 require_once 'vendor/autoload.php';
-require_once 'src/ernesto27/seeder/Seeder.php';
 
 use \Ernesto27\Seeder\Seeder;
+
 \ORM::configure('sqlite:./data/database');
 
 class SeederTest extends \PHPUnit_Framework_TestCase
@@ -92,14 +92,13 @@ class SeederTest extends \PHPUnit_Framework_TestCase
     /** @test */
     public function it_should_attach_a_child_model_when_create_any_quantity_using_a_closure()
     {
-        $count = 4;
-        Seeder::getInstance()->table('users')->data($this->dataUser)->create($count)->each(function($model){
+
+        Seeder::getInstance()->table('users')->data($this->dataUser)->create(4)->each(function($model){
             $this->data['user_id'] = array(
                 'field' => 'user_id',
                 'value' => $model->id
             );
 
-            $this->assertEquals($count, count($models));
             Seeder::getInstance()->table('posts')->data($this->data)->create();
         });
 
